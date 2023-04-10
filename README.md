@@ -45,7 +45,7 @@ new Task<>(new Task.Runnable<String>() {
                 Task.Foreground.run(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MainActivity.this, "Toast in background task", Toast.LENGTH_SHORT).show()) // Toast in UI Thread
+                        Toast.makeText(MainActivity.this, "Toast in background task", Toast.LENGTH_SHORT).show(); // Toast in UI Thread
                     }
                 });
                 Thread.sleep(1000);
