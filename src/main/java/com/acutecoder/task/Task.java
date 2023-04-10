@@ -95,20 +95,23 @@ public class Task<T> {
             isRunning = true;
             if (!isBackground) {
                 try {
-                    getForegroundHandler().post(() -> {
-                        try {
-                            if (onStart != null) onStart.callback();
-                            T o = runnable.run();
-                            if (result != null) {
-                                result.onResult(o);
+                    getForegroundHandler().post(new java.lang.Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if (onStart != null) onStart.callback();
+                                T o = runnable.run();
+                                if (result != null) {
+                                    result.onResult(o);
+                                }
+                                isRunning = false;
+                                if (onEnd != null) onEnd.callback();
+                            } catch (Exception e) {
+                                isRunning = false;
+                                if (onEnd != null) onEnd.callback();
+                                if (error != null) Task.this.onError(e);
+                                else throw new TaskException(e, isBackground);
                             }
-                            isRunning = false;
-                            if (onEnd != null) onEnd.callback();
-                        } catch (Exception e) {
-                            isRunning = false;
-                            if (onEnd != null) onEnd.callback();
-                            if (error != null) onError(e);
-                            else throw new TaskException(e, isBackground);
                         }
                     });
                 } catch (Exception e) {
@@ -118,20 +121,32 @@ public class Task<T> {
             } else {
                 try {
                     if (onStart != null) onStart.callback();
-                    new Thread(() -> {
-                        try {
-                            assert runnable != null;
-                            T o = runnable.run();
-                            getForegroundHandler().post(() -> {
-                                if (result != null) result.onResult(o);
-                                if (onEnd != null) onEnd.callback();
-                            });
-                            isRunning = false;
-                        } catch (Exception e) {
-                            isRunning = false;
-                            if (onEnd != null) getForegroundHandler().post(() -> onEnd.callback());
-                            if (error != null) onError(e);
-                            else throw new TaskException(e, isBackground);
+                    new Thread(new java.lang.Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                assert runnable != null;
+                                final T o = runnable.run();
+                                getForegroundHandler().post(new java.lang.Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (result != null) result.onResult(o);
+                                        if (onEnd != null) onEnd.callback();
+                                    }
+                                });
+                                isRunning = false;
+                            } catch (Exception e) {
+                                isRunning = false;
+                                if (onEnd != null)
+                                    getForegroundHandler().post(new java.lang.Runnable() {
+                                        @Override
+                                        public void run() {
+                                            onEnd.callback();
+                                        }
+                                    });
+                                if (error != null) Task.this.onError(e);
+                                else throw new TaskException(e, isBackground);
+                            }
                         }
                     }).start();
                 } catch (Exception e) {
@@ -145,8 +160,13 @@ public class Task<T> {
         }
     }
 
-    private void onError(Exception e) {
-        getForegroundHandler().post(() -> error.onError(e));
+    private void onError(final Exception e) {
+        getForegroundHandler().post(new java.lang.Runnable() {
+            @Override
+            public void run() {
+                error.onError(e);
+            }
+        });
     }
 
     public interface Runnable<T> {
