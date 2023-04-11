@@ -20,7 +20,12 @@ public class Task<T> {
     private Callback onStart, onEnd;
     private boolean isBackground = true, isRunning = false;
 
-    protected Task(Runnable<T> runnable) {
+    /**
+     * Creates a new Task instance
+     *
+     * @param runnable The task
+     */
+    public Task(Runnable<T> runnable) {
         this.runnable = runnable;
     }
 
@@ -191,16 +196,6 @@ public class Task<T> {
 
         public TaskException(String msg, boolean isBackground) {
             super("Error while executing " + (isBackground ? "Background" : "Foreground") + " task: " + msg);
-        }
-    }
-
-    /**
-     * For Java 1.7
-     */
-    public static class Java_1_7<T> extends Task<T> {
-
-        public Java_1_7(Runnable<T> runnable) {
-            super(runnable);
         }
     }
 }
