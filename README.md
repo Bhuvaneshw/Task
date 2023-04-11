@@ -15,7 +15,7 @@ allprojects {
 Add the dependency
 ```
 dependencies {
-    implementation 'com.github.Bhuvaneshw:task:1.1.0'
+    implementation 'com.github.Bhuvaneshw:task:1.1.1'
 }
 ```
 
@@ -43,7 +43,7 @@ Optional methods
  
 ### Example
 ```
-Task.with(() -> {
+Task.with(() -> { // or new Task<>(()->{})
             Task.Foreground.run(()-> Toast.makeText(this, "Toast in background task", Toast.LENGTH_SHORT).show()); // Toast in UI Thread
             Thread.sleep(1000);
             return "Hello";
@@ -60,7 +60,7 @@ Task.with(() -> {
 Copy Task.java to your project
 ### Example
 ```
-new Task.Java_1_7<>(new Task.Runnable<String>() {
+new Task<>(new Task.Runnable<String>() {
             @Override
             public String run() throws Exception {
                 Task.Foreground.run(new Runnable() {
