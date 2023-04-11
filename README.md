@@ -1,6 +1,27 @@
 # Task
 Android Library for background and foreground tasks
 
+## Implementation (Gradle)
+Add it in your root build.gradle at the end of repositories:
+```
+allprojects {
+    repositories {
+        //...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+Add the dependency
+```
+dependencies {
+    implementation 'com.github.Bhuvaneshw:task:1.1.0'
+}
+```
+
+## Latest Version
+[![](https://jitpack.io/v/Bhuvaneshw/task.svg)](https://jitpack.io/#Bhuvaneshw/task)
+
 ## How to Use
 
 ### Example
