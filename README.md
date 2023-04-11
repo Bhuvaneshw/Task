@@ -82,7 +82,7 @@ new Task.Java_1_7<>(new Task.Runnable<String>() {
 
 ## License
 ```
-    AcuteCoder/task - Android Library for background and foreground tasks
+    AcuteCoder/Task - Android Library for background and foreground tasks
     Copyright (C) 2023  Bhuvaneshwaran
 
     This program is free software: you can redistribute it and/or modify
