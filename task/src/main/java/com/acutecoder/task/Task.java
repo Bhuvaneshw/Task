@@ -20,18 +20,17 @@ public class Task<T> {
     private Callback onStart, onEnd;
     private boolean isBackground = true, isRunning = false;
 
-    public Task(Runnable<T> runnable) {
-        this(runnable, null);
-    }
-
-    public Task(Runnable<T> runnable, Result<T> result) {
-        this(runnable, result, null);
-    }
-
-    public Task(Runnable<T> runnable, Result<T> result, Error error) {
+    private Task(Runnable<T> runnable) {
         this.runnable = runnable;
-        this.result = result;
-        this.error = error;
+    }
+
+    /**
+     * Creates a new Task instance
+     * @param runnable The task
+     * @return Task instance
+     */
+    public static Task<?> with(Runnable<?> runnable) {
+        return new Task<>(runnable);
     }
 
     private static Handler getForegroundHandler() {
@@ -73,7 +72,7 @@ public class Task<T> {
     /**
      * Runs the task in background thread
      */
-    public Task<T> inBackground() {
+    public Task<T> doInBackground() {
         isBackground = true;
         return this;
     }
@@ -81,7 +80,7 @@ public class Task<T> {
     /**
      * Runs the task in foreground thread (Main thread or UI thread)
      */
-    public Task<T> inForeground() {
+    public Task<T>doInForeground() {
         isBackground = false;
         return this;
     }
