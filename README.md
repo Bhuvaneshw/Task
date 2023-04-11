@@ -1,11 +1,11 @@
 # Task
 Android Library for background and foreground tasks
 
-## How to Use in Java 1.8
+## How to Use
 
 ### Example
 ```
-new Task<>(() -> {
+Task.with(() -> {
             Task.Foreground.run(()-> Toast.makeText(this, "Toast in background task", Toast.LENGTH_SHORT).show()); // Toast in UI Thread
             Thread.sleep(1000);
             return null;
@@ -17,17 +17,17 @@ Optional methods
  2. onEnd
  3. onResult
  4. onError
- 5. inBackground
- 6. inForeground
+ 5. doInBackground
+ 6. doInForeground
  
 ### Example
 ```
-new Task<>(() -> {
+Task.with(() -> {
             Task.Foreground.run(()-> Toast.makeText(this, "Toast in background task", Toast.LENGTH_SHORT).show()); // Toast in UI Thread
             Thread.sleep(1000);
             return "Hello";
         })
-          .inBackground() //or .inForeground() # default it will be background task
+          .doInBackground() //or .doInForeground() # default it will be background task
           .onStart(() -> textView.setText("Starting task"))
           .onEnd(() -> textView.append("\n" + "Task Finished"))
           .onResult(result -> textView.append("\n" + result))
@@ -39,7 +39,7 @@ new Task<>(() -> {
 
 ### Example
 ```
-new Task<>(new Task.Runnable<String>() {
+new Task.Java_1_7<>(new Task.Runnable<String>() {
             @Override
             public String run() throws Exception {
                 Task.Foreground.run(new Runnable() {
@@ -52,7 +52,7 @@ new Task<>(new Task.Runnable<String>() {
                 return "Hello";
             }
         })
-          .inBackground() //or .inForeground() # default it will be background task
+          .doInBackground() //or .doInForeground() # default it will be background task
           .onStart(new Task.Callback() {
               @Override
               public void callback() {
