@@ -57,7 +57,7 @@ Task.with(() -> {
 ```
 
 ## For Java 1.7
-
+Copy Task.java to your project
 ### Example
 ```
 new Task.Java_1_7<>(new Task.Runnable<String>() {
