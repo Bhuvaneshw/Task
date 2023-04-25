@@ -43,7 +43,7 @@ Optional methods
  
 ### Example
 ```
-Task.with(() -> { // or new Task<>(()->{})
+new Task<>(()->{ // or Task.with(() -> {})
             Task.Foreground.run(()-> Toast.makeText(this, "Toast in background task", Toast.LENGTH_SHORT).show()); // Toast in UI Thread
             Thread.sleep(1000);
             return "Hello";
