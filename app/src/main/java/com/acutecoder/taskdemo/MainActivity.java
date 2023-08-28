@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView textView = findViewById(R.id.textview);
         //Java 1.7
-        new Task.Java_1_7<>(new Task.Runnable<String>() {
+        new Task<>(new Task.Runnable<String>() {
                     @Override
                     public String run() throws Exception {
                         Task.Foreground.run(new Runnable() {
