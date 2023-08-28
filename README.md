@@ -51,7 +51,7 @@ new Task<>(()->{ // or Task.with(() -> {})
           .doInBackground() //or .doInForeground() # default it will be background task
           .onStart(() -> textView.setText("Starting task"))
           .onEnd(() -> textView.append("\n" + "Task Finished"))
-          .onResult(result -> textView.append("\n" + result))
+          .onResult(taskResult -> textView.append("\n" + taskResult))
           .onError(e -> textView.append("\n" + e.getMessage()))
           .start();
 ```
@@ -88,8 +88,8 @@ new Task<>(new Task.Runnable<String>() {
           })
           .onResult(new Task.Result<String>() {
               @Override
-              public void onResult(String result) {
-                  textView.append("\n" + result);
+              public void onResult(String taskResult) {
+                  textView.append("\n" + taskResult);
               }
           })
           .onError(new Task.Error() {

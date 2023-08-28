@@ -7,6 +7,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.acutecoder.task.TaskRunnable;
+import com.acutecoder.task.TaskCallback;
+import com.acutecoder.task.TaskError;
+import com.acutecoder.task.TaskResult;
 import com.acutecoder.task.Task;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView textView = findViewById(R.id.textview);
         //Java 1.7
-        new Task<>(new Task.Runnable<String>() {
+        new Task<>(new TaskRunnable<String>() {
                     @Override
                     public String run() throws Exception {
                         Task.Foreground.run(new Runnable() {
@@ -33,25 +37,25 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .doInBackground() //or .doInForeground() # default it will be background task
-                .onStart(new Task.Callback() {
+                .onStart(new TaskCallback() {
                     @Override
-                    public void callback() {
+                    public void run() {
                         textView.setText("Starting task");
                     }
                 })
-                .onEnd(new Task.Callback() {
+                .onEnd(new TaskCallback() {
                     @Override
-                    public void callback() {
+                    public void run() {
                         textView.append("\n" + "Task Finished");
                     }
                 })
-                .onResult(new Task.Result<String>() {
+                .onResult(new TaskResult<String>() {
                     @Override
                     public void onResult(String result) {
                         textView.append("\n" + result);
                     }
                 })
-                .onError(new Task.Error() {
+                .onError(new TaskError() {
                     @Override
                     public void onError(Exception e) {
                         textView.append("\n" + e.getMessage());
