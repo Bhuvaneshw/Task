@@ -29,7 +29,7 @@ dependencies {
 ### Example
 ```
 Task.with(task -> { //or new Task<>(task -> {
-            Task.Foreground.run(() -> Toast.makeText(this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
+            Task.Foreground.start(() -> Toast.makeText(this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
             task.sleep(1000);
             return null;
         }).start();
@@ -47,7 +47,7 @@ Optional methods
 ### Complete Example
 ```
 new Task<>(task -> {//Outer Task
-            Task.Foreground.run(() -> Toast.makeText(this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
+            Task.Foreground.start(() -> Toast.makeText(this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
 
             task.sleep(1000);
             task.publishProgress(25);
@@ -84,7 +84,7 @@ Copy [these files](https://github.com/Bhuvaneshw/Task/tree/main/task/src/main/ja
 new Task<>(new TaskRunnable<String>() { //Outer Task
         @Override
         public String run(Task<String> t) throws Exception {
-            Task.Foreground.run(new Runnable() {
+            Task.Foreground.start(new Runnable() {
                 @Override
                 public void run() {
                     Toast.makeText(MainActivity.this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show(); // Toast in UI Thread
