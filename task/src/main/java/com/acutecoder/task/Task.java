@@ -219,7 +219,7 @@ public class Task<T> {
         /**
          * Runs a simple task in UI thread
          */
-        public static void run(java.lang.Runnable runnable) {
+        public static void start(java.lang.Runnable runnable) {
             getForegroundHandler().post(runnable);
         }
     }
@@ -228,7 +228,7 @@ public class Task<T> {
         /**
          * Runs a simple task in new thread
          */
-        public static void run(java.lang.Runnable runnable) {
+        public static void start(java.lang.Runnable runnable) {
             new Thread(runnable).start();
         }
     }

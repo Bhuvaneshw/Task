@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         new Task<>(new TaskRunnable<String>() { //Outer Task
             @Override
             public String run(Task<String> t) throws Exception {
-                Task.Foreground.run(new Runnable() {
+                Task.Foreground.start(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(MainActivity.this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show(); // Toast in UI Thread
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Java 1.8
         Task.with(task -> {//Outer Task
-                    Task.Foreground.run(() -> Toast.makeText(this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
+                    Task.Foreground.start(() -> Toast.makeText(this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
 
                     task.sleep(1000);
                     task.publishProgress(25);
