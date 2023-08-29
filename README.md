@@ -17,7 +17,7 @@ allprojects {
 Add the dependency
 ```
 dependencies {
-    implementation 'com.github.Bhuvaneshw:task:1.1.2'
+    implementation 'com.github.Bhuvaneshw:task:1.1.3'
 }
 ```
 
