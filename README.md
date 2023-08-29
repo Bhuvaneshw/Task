@@ -1,7 +1,9 @@
 # Task
-Android Library for background and foreground tasks
+Android Library for background and foreground tasks.<br>
 
-## Implementation (Gradle)
+### [For Kotlin check this](https://github.com/Bhuvaneshw/TaskKT)
+
+## Implementation (Gradle, Java)
 Add it in your root build.gradle at the end of repositories:
 ```
 allprojects {
@@ -15,7 +17,7 @@ allprojects {
 Add the dependency
 ```
 dependencies {
-    implementation 'com.github.Bhuvaneshw:task:1.1.1'
+    implementation 'com.github.Bhuvaneshw:task:1.1.2'
 }
 ```
 
@@ -26,9 +28,9 @@ dependencies {
 
 ### Example
 ```
-Task.with(() -> {
-            Task.Foreground.run(()-> Toast.makeText(this, "Toast in background task", Toast.LENGTH_SHORT).show()); // Toast in UI Thread
-            Thread.sleep(1000);
+Task.with(task -> { //or new Task<>(task -> {
+            Task.Foreground.run(() -> Toast.makeText(this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
+            task.sleep(1000);
             return null;
         }).start();
 ```
@@ -40,65 +42,120 @@ Optional methods
  4. onError
  5. doInBackground
  6. doInForeground
+ 7. then
  
-### Example
+### Complete Example
 ```
-new Task<>(()->{ // or Task.with(() -> {})
-            Task.Foreground.run(()-> Toast.makeText(this, "Toast in background task", Toast.LENGTH_SHORT).show()); // Toast in UI Thread
-            Thread.sleep(1000);
-            return "Hello";
+new Task<>(task -> {//Outer Task
+            Task.Foreground.run(() -> Toast.makeText(this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
+
+            task.sleep(1000);
+            task.publishProgress(25);
+            task.sleep(1000) //Function chaining is also possible
+                    .publishProgress(56)
+                    .sleep(2000)
+                    .publishProgress(100)
+                    .sleep(500);
+            return "T2";
         })
-          .doInBackground() //or .doInForeground() # default it will be background task
-          .onStart(() -> textView.setText("Starting task"))
-          .onEnd(() -> textView.append("\n" + "Task Finished"))
-          .onResult(taskResult -> textView.append("\n" + taskResult))
-          .onError(e -> textView.append("\n" + e.getMessage()))
-          .start();
+        .doInBackground() //or .doInForeground() # default it will be background task
+        .onStart(() -> textView.append("\nStarting task 2"))
+        .onEnd(() -> textView.append("\n" + "Task 2 Finished"))
+        .onResult(result -> textView.append("\nTask 2 " + result))
+        .onError(error -> textView.append("\nTask 2 " + error.getMessage()))
+        .onProgress(progress -> textView.append("\nTask 2 Progress " + progress[0]))
+        .then(result ->
+                new Task<>(t2 -> {//Inner Task
+                    t2.sleep(2000);
+                    t2.publishProgress("Result of outer task is " + result);
+                    t2.sleep(2000);
+                    return "Task 2 chained result";
+                }).onEnd(() -> textView.append("\nChained task 2 finished")
+                ).onProgress(progress -> textView.append("\nChained Task 2 Progress " + progress[0])
+                ).onResult(result2 -> textView.append("\n" + result2)))
+        .start();//this start method belongs to outer task and not inner task
+//NOTE: You should not call start method of chained task. It will be called by outer task when it is completed.
 ```
 
 ## For Java 1.7
-Copy Task.java to your project
+Copy [these files](https://github.com/Bhuvaneshw/Task/tree/main/task/src/main/java/com/acutecoder/task) to your project
 ### Example
 ```
-new Task<>(new Task.Runnable<String>() {
-            @Override
-            public String run() throws Exception {
-                Task.Foreground.run(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "Toast in background task", Toast.LENGTH_SHORT).show(); // Toast in UI Thread
-                    }
-                });
-                Thread.sleep(1000);
-                return "Hello";
-            }
-        })
-          .doInBackground() //or .doInForeground() # default it will be background task
-          .onStart(new Task.Callback() {
-              @Override
-              public void callback() {
-                  textView.setText("Starting task");
-              }
-          })
-          .onEnd(new Task.Callback() {
-              @Override
-              public void callback() {
-                  textView.append("\n" + "Task Finished");
-              }
-          })
-          .onResult(new Task.Result<String>() {
-              @Override
-              public void onResult(String taskResult) {
-                  textView.append("\n" + taskResult);
-              }
-          })
-          .onError(new Task.Error() {
-              @Override
-              public void onError(Exception e) {
-                  textView.append("\n" + e.getMessage());
-              }
-          })
-          .start();
+new Task<>(new TaskRunnable<String>() { //Outer Task
+        @Override
+        public String run(Task<String> t) throws Exception {
+            Task.Foreground.run(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show(); // Toast in UI Thread
+                }
+            });
+            Thread.sleep(1000);
+            return "T1";
+        }
+    })
+            .doInBackground() //or .doInForeground() # default it will be background task
+            .onStart(new TaskCallback() {
+                @Override
+                public void run() {
+                    textView.setText("Starting task1 ");
+                }
+            })
+            .onEnd(new TaskCallback() {
+                @Override
+                public void run() {
+                    textView.append("\n" + "Task 1 Finished");
+                }
+            })
+            .onResult(new TaskResult<String>() {
+                @Override
+                public void onResult(String result) {
+                    textView.append("\nTask 1 result " + result);
+                }
+            })
+            .onError(new TaskError() {
+                @Override
+                public void onError(Exception e) {
+                    textView.append("\nTask 1 error " + e.getMessage());
+                }
+            })
+            .onProgress(new OnProgress() {
+                @Override
+                public void progress(Object... progress) {
+                    textView.append("\nTask 1 Progress " + progress[0]);
+                }
+            })
+            .then(new NextTask<String>() {
+                @Override
+                public Task<?> run(String result) {
+                    return new Task<>(new TaskRunnable<String>() {//Inner Task
+                        @Override
+                        public String run(Task<String> t2) throws Exception {
+                            t2.sleep(2000);
+                            t2.publishProgress("Result of outer task is " + result);
+                            t2.sleep(2000);
+                            return "Task 1 chained result";
+                        }
+                    }).onEnd(new TaskCallback() {
+                        @Override
+                        public void run() {
+                            textView.append("\nChained task 1 finished");
+                        }
+                    }).onProgress(new OnProgress() {
+                        @Override
+                        public void progress(Object... progress) {
+                            textView.append("\nChained Task 1 Progress " + progress[0]);
+                        }
+                    }).onResult(new TaskResult<String>() {
+                        @Override
+                        public void onResult(String result) {
+                            textView.append("\n" + result);
+                        }
+                    });
+                }
+            })
+            .start();//this start method belongs to outer task and not inner task
+    //NOTE: You should not call start method of chained task. It will be called by outer task when it is completed.
 ```
 
 ## License
