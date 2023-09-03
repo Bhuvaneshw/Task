@@ -16,8 +16,8 @@ public class Task<T> {
     private final TaskRunnable<T> taskRunnable;
     private TaskResult<T> taskResult;
     private TaskError taskError;
-    private TaskCallback onStart, onEnd;
-    private boolean isBackground = true, isRunning = false;
+    private TaskCallback onStart, onEnd, onCancel;
+    private boolean isBackground = true, isRunning = false, isCancelled = false;
     private OnProgress onProgress;
     private NextTask<T> next;
 
@@ -77,6 +77,14 @@ public class Task<T> {
     }
 
     /**
+     * Called when the execution of task is cancelled
+     */
+    public Task<T> onCancel(TaskCallback onCancel) {
+        this.onCancel = onCancel;
+        return this;
+    }
+
+    /**
      * Called to update progress (in UI) by publishProgress function in UI Thread
      */
     public Task<T> onProgress(OnProgress onProgress) {
@@ -105,6 +113,7 @@ public class Task<T> {
      */
     public void start() {
         try {
+            isCancelled = false;
             if (isRunning) throw new TaskException("Task already running!", isBackground);
             isRunning = true;
             if (isBackground) {
@@ -125,6 +134,16 @@ public class Task<T> {
                                     }
                                 });
                                 isRunning = false;
+                            } catch (CancellationException e) {
+                                isRunning = false;
+                                if (onCancel != null) {
+                                    getForegroundHandler().post(new java.lang.Runnable() {
+                                        @Override
+                                        public void run() {
+                                            onCancel.run();
+                                        }
+                                    });
+                                }
                             } catch (Exception e) {
                                 isRunning = false;
                                 if (onEnd != null)
@@ -157,6 +176,11 @@ public class Task<T> {
                                 isRunning = false;
                                 if (onEnd != null) onEnd.run();
                                 if (next != null) next.run(o).start();
+                            } catch (CancellationException e) {
+                                isRunning = false;
+                                if (onCancel != null) {
+                                    onCancel.run();
+                                }
                             } catch (Exception e) {
                                 isRunning = false;
                                 if (onEnd != null) onEnd.run();
@@ -204,6 +228,28 @@ public class Task<T> {
     public Task<T> then(NextTask<T> nextTask) {
         next = nextTask;
         return this;
+    }
+
+    /**
+     * Sets the cancellation flag
+     */
+    public Task<T> cancel() {
+        isCancelled = true;
+        return this;
+    }
+
+    /**
+     * Returns state of task
+     */
+    public boolean isActive() {
+        return !isCancelled;
+    }
+
+    /**
+     * Ensure task is alive (ie, task is not cancelled)
+     */
+    public void ensureActive() {
+        if (!isActive()) throw new CancellationException();
     }
 
     private void onError(final Exception e) {

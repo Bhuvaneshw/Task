@@ -1,5 +1,7 @@
 # Task
-Android Library for background and foreground tasks.<br>
+Android Library for background and foreground tasks. Implemented with Thread.<br>
+Do not start large number of Task concurrently.<br>
+Starting large number of Threads may leads to out of memory.
 
 ### [For Kotlin check this](https://github.com/Bhuvaneshw/TaskKT)
 
@@ -17,7 +19,7 @@ allprojects {
 Add the dependency
 ```
 dependencies {
-    implementation 'com.github.Bhuvaneshw:task:1.1.3'
+    implementation 'com.github.Bhuvaneshw:task:1.1.4'
 }
 ```
 
@@ -28,7 +30,16 @@ dependencies {
 
 ### Example
 ```
-Task.with(task -> { //or new Task<>(task -> {
+Task.with(task -> {             //or new Task<>(task -> {
+            // Do some task
+            task.sleep(1000);
+            return null;
+        }).start();
+```
+
+### Example with Toast
+```
+Task.with(task -> {             //or new Task<>(task -> {
             Task.Foreground.start(() -> Toast.makeText(this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
             task.sleep(1000);
             return null;
@@ -36,14 +47,14 @@ Task.with(task -> { //or new Task<>(task -> {
 ```
 
 Optional methods
- 1. onStart
- 2. onEnd
- 3. onResult
- 4. onError
- 5. doInBackground
- 6. doInForeground
- 7. then
- 
+1. onStart
+2. onEnd
+3. onResult
+4. onError
+5. doInBackground
+6. doInForeground
+7. then
+
 ### Complete Example
 ```
 new Task<>(task -> {//Outer Task
@@ -75,6 +86,27 @@ new Task<>(task -> {//Outer Task
                 ).onResult(result2 -> textView.append("\n" + result2)))
         .start();//this start method belongs to outer task and not inner task
 //NOTE: You should not call start method of chained task. It will be called by outer task when it is completed.
+```
+
+### Cancelling task
+```
+Task<?> task = Task.with(t -> {
+            int i = 10;
+            while (i-- > 0) {
+                t.ensureActive(); // Checks if the task is cancelled. If yes then moves to onCancel
+                t.publishProgress(i, "Running...");
+                t.sleep(500);
+            }
+            return "Hello";
+        })
+        .onStart(() -> textView.append("\n\n\nStarting Cancellable Task: Click here to cancel"))
+        .onEnd(() -> textView.append("\nTask Completed"))
+        .onProgress(p -> textView.append("\nTask Progress " + (10 - (int) p[0]) * 10 + "% " + p[1]))
+        .onResult(r -> textView.append("\nTask result " + r))
+        .onCancel(() -> textView.append("\nTask Cancelled"));
+task.start();
+
+textView.setOnClickListener(v -> task.cancel());
 ```
 
 ## For Java 1.7

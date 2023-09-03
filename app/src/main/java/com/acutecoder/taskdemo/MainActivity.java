@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show(); // Toast in UI Thread
                     }
                 });
-                Thread.sleep(1000);
+                Thread.sleep(500);
                 return "T1";
             }
         })
@@ -75,15 +75,16 @@ public class MainActivity extends AppCompatActivity {
                         return new Task<>(new TaskRunnable<String>() {//Inner Task
                             @Override
                             public String run(Task<String> t2) throws Exception {
-                                t2.sleep(2000);
+                                t2.sleep(800);
                                 t2.publishProgress("Result of outer task is " + result);
-                                t2.sleep(2000);
+                                t2.sleep(800);
                                 return "Task 1 chained result";
                             }
                         }).onEnd(new TaskCallback() {
                             @Override
                             public void run() {
                                 textView.append("\nChained task 1 finished");
+                                startJ1_8Task(textView);
                             }
                         }).onProgress(new OnProgress() {
                             @Override
@@ -100,36 +101,65 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .start();//this start method belongs to outer task and not inner task
         //NOTE: You should not call start method of chained task. It will be called by outer task when it is completed.
+    }
 
+    @SuppressLint("SetTextI18n")
+    private void startJ1_8Task(TextView textView) {
         //Java 1.8
         Task.with(task -> {//Outer Task
-                    Task.Foreground.start(() -> Toast.makeText(this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
+                    Task.Foreground.start(() -> Toast.makeText(MainActivity.this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
 
-                    task.sleep(1000);
+                    task.sleep(500);
                     task.publishProgress(25);
-                    task.sleep(1000) //Function chaining is also possible
+                    task.sleep(500) //Function chaining is also possible
                             .publishProgress(56)
-                            .sleep(2000)
+                            .sleep(800)
                             .publishProgress(100)
                             .sleep(500);
                     return "T2";
                 })
                 .doInBackground() //or .doInForeground() # default it will be background task
-                .onStart(() -> textView.append("\nStarting task 2"))
+                .onStart(() -> textView.append("\n\n\nStarting task 2"))
                 .onEnd(() -> textView.append("\n" + "Task 2 Finished"))
                 .onResult(result -> textView.append("\nTask 2 " + result))
                 .onError(error -> textView.append("\nTask 2 " + error.getMessage()))
                 .onProgress(progress -> textView.append("\nTask 2 Progress " + progress[0]))
                 .then(result ->
                         new Task<>(t2 -> {//Inner Task
-                            t2.sleep(2000);
+                            t2.sleep(800);
                             t2.publishProgress("Result of outer task is " + result);
-                            t2.sleep(2000);
+                            t2.sleep(800);
                             return "Task 2 chained result";
-                        }).onEnd(() -> textView.append("\nChained task 2 finished")
+                        }).onEnd(() -> {
+                                    textView.append("\nChained task 2 finished");
+                                    startCancellableTask(textView);
+                                }
                         ).onProgress(progress -> textView.append("\nChained Task 2 Progress " + progress[0])
                         ).onResult(result2 -> textView.append("\n" + result2)))
                 .start();//this start method belongs to outer task and not inner task
         //NOTE: You should not call start method of chained task. It will be called by outer task when it is completed.
     }
+
+    @SuppressLint("SetTextI18n")
+    private void startCancellableTask(TextView textView) {
+        //Cancelling of task
+        Task<?> task = Task.with(t -> {
+                    int i = 10;
+                    while (i-- > 0) {
+                        t.ensureActive(); // Checks if the task is cancelled. If yes then moves to onCancel
+                        t.publishProgress(i, "Running...");
+                        t.sleep(500);
+                    }
+                    return "Hello";
+                })
+                .onStart(() -> textView.append("\n\n\nStarting Cancellable Task: Click here to cancel"))
+                .onEnd(() -> textView.append("\nTask Completed"))
+                .onProgress(p -> textView.append("\nTask Progress " + (10 - (int) p[0]) * 10 + "% " + p[1]))
+                .onResult(r -> textView.append("\nTask result " + r))
+                .onCancel(() -> textView.append("\nTask Cancelled"));
+        task.start();
+
+        textView.setOnClickListener(v -> task.cancel());
+    }
+
 }
