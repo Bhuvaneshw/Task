@@ -42,9 +42,9 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = 'com.acutecoder.kotlin'
-                artifactId = 'task'
-                version = '1.1.5'
+                groupId = 'com.acutecoder'
+                artifactId = 'taskkt'
+                version = '1.1.5beta02'
             }
         }
     }
