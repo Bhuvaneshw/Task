@@ -1,0 +1,9 @@
+# Project exclude paths
+/.gradle/
+/build/
+/app/build/
+/task/build/
+/taskkt/build/
+/app_taskkt/build/
+/.idea/
+*.iml

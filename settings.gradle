@@ -18,3 +18,5 @@ dependencyResolutionManagement {
 rootProject.name = "Task"
 include ':app'
 include ':task'
+include ':app_taskkt'
+include ':taskkt'
