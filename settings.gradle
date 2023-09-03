@@ -17,6 +17,9 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Task"
 include ':app'
-include ':task'
 include ':app_taskkt'
+
+include ':task'
 include ':taskkt'
+include ':taskcoroutine'
+include ':task_base'

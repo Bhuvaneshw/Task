@@ -13,7 +13,7 @@ import android.os.Looper
  * @author AcuteCoder
  */
 
-class Task<T>(private val runnable: Task<T>.() -> T) {
+class Task<T>(private val runnable: Task<T>.() -> T) : AbstractTask<T> {
     private var taskResult: ((result: T) -> Unit)? = null
     private var taskError: ((e: Exception) -> Unit)? = null
     private var onStart: (() -> Unit)? = null
@@ -23,12 +23,12 @@ class Task<T>(private val runnable: Task<T>.() -> T) {
     private var isBackground = true
     private var isRunning = false
     private var isCancelled = false
-    private var next: ((T) -> Task<*>)? = null
+    private var next: ((T) -> AbstractTask<*>)? = null
 
     /**
      * Called when the task is successfully completed without error
      */
-    fun onResult(taskResult: ((result: T) -> Unit)?): Task<T> {
+    override fun onResult(taskResult: ((result: T) -> Unit)?): Task<T> {
         this.taskResult = taskResult
         return this
     }
@@ -36,7 +36,7 @@ class Task<T>(private val runnable: Task<T>.() -> T) {
     /**
      * Called when the task is failed
      */
-    fun onError(taskError: ((error: Exception) -> Unit)?): Task<T> {
+    override fun onError(taskError: ((error: Exception) -> Unit)?): Task<T> {
         this.taskError = taskError
         return this
     }
@@ -44,7 +44,7 @@ class Task<T>(private val runnable: Task<T>.() -> T) {
     /**
      * Called before the execution of task
      */
-    fun onStart(onStart: (() -> Unit)?): Task<T> {
+    override fun onStart(onStart: (() -> Unit)?): Task<T> {
         this.onStart = onStart
         return this
     }
@@ -52,7 +52,7 @@ class Task<T>(private val runnable: Task<T>.() -> T) {
     /**
      * Called after the execution of task regardless the completion of the task (Whether the task is executed without error)
      */
-    fun onEnd(onEnd: (() -> Unit)?): Task<T> {
+    override fun onEnd(onEnd: (() -> Unit)?): Task<T> {
         this.onEnd = onEnd
         return this
     }
@@ -60,7 +60,7 @@ class Task<T>(private val runnable: Task<T>.() -> T) {
     /**
      * Called when the execution of task is cancelled
      */
-    fun onCancel(onCancel: (() -> Unit)?): Task<T> {
+    override fun onCancel(onCancel: (() -> Unit)?): Task<T> {
         this.onCancel = onCancel
         return this
     }
@@ -68,7 +68,7 @@ class Task<T>(private val runnable: Task<T>.() -> T) {
     /**
      * Called to update progress (in UI) by publishProgress function in UI Thread
      */
-    fun onProgress(onProgress: ((Array<out Any>) -> Unit)?): Task<T> {
+    override fun onProgress(onProgress: ((Array<out Any>) -> Unit)?): Task<T> {
         this.onProgress = onProgress
         return this
     }
@@ -92,7 +92,7 @@ class Task<T>(private val runnable: Task<T>.() -> T) {
     /**
      * Starts the execution of the task
      */
-    fun start() {
+    override fun start() {
         try {
             isCancelled = false
             if (isRunning) throw TaskException("Task already running!", isBackground)
@@ -162,7 +162,7 @@ class Task<T>(private val runnable: Task<T>.() -> T) {
     /**
      * Publish the progress in UI Thread
      */
-    fun publishProgress(vararg progress: Any): Task<T> {
+    override fun publishProgress(vararg progress: Any): Task<T> {
         onProgress?.let {
             foregroundHandler.post {
                 it.invoke(progress)
@@ -182,7 +182,7 @@ class Task<T>(private val runnable: Task<T>.() -> T) {
     /**
      * Chains next Task
      */
-    fun then(nextTask: ((T) -> Task<*>)?): Task<T> {
+    override fun then(nextTask: ((T) -> AbstractTask<*>)?): Task<T> {
         next = nextTask;
         return this
     }
@@ -190,7 +190,7 @@ class Task<T>(private val runnable: Task<T>.() -> T) {
     /**
      * Sets the cancellation flag
      */
-    fun cancel(): Task<T> {
+    override fun cancel(): Task<T> {
         isCancelled = true
         return this
     }
@@ -198,14 +198,14 @@ class Task<T>(private val runnable: Task<T>.() -> T) {
     /**
      * Returns state of task
      */
-    fun isActive(): Boolean {
+    override  fun isActive(): Boolean {
         return !isCancelled
     }
 
     /**
      * Ensure task is alive (ie, task is not cancelled)
      */
-    fun ensureActive() {
+    override fun ensureActive() {
         if (!isActive()) throw CancellationException()
     }
 

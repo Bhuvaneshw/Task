@@ -5,9 +5,10 @@ import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.acutecoder.task.CoroutineTask
 import com.acutecoder.task.Task
 
-class MainActivity : AppCompatActivity() {
+class CombinationDemoActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -15,10 +16,10 @@ class MainActivity : AppCompatActivity() {
 
         val textView = findViewById<TextView>(R.id.textview)
 
-        Task {//Outer Task
+        Task {//Outer Task (Task)
             Task.Foreground.start {
                 Toast.makeText(
-                    this@MainActivity,
+                    this@CombinationDemoActivity,
                     "This is how you can toast with Task",
                     Toast.LENGTH_SHORT
                 ).show()
@@ -43,52 +44,27 @@ class MainActivity : AppCompatActivity() {
             }.onProgress {
                 textView.append("\nProgress ${it[0]}")
             }.then {
-                Task {//Inner Task
-                    sleep(800)
-                    publishProgress("Result of outer task is $it")
-                    sleep(800)
-                    "CT"
+                CoroutineTask { //Inner Task (CoroutineTask)
+                    var i = 10
+                    while (i-- > 0) {
+                        publishProgress(i, "Running...")
+                        sleep(500)
+                    }
+                    "Coroutine Task Result"
                 }.onStart {
-                    textView.append("\nStarting chained task")
+                    textView.append("\n\n\nStarting Coroutine Task:\n")
                 }.onEnd {
-                    textView.append("\nChained task Finished")
-                    startCancellableTask(textView)
-                }.onResult { result ->
-                    textView.append("\nChained task Result $result")
-                }.onError { error ->
-                    textView.append("\nChained task Error " + error.message)
+                    textView.append("\nTask Completed")
                 }.onProgress {
-                    textView.append("\nChained task Progress ${it[0]}")
+                    textView.append(
+                        "\nTask Progress ${(10 - it[0] as Int) * 10}% ${it[1]}"
+                    )
+                }.onResult {
+                    textView.append("\nTask result $it")
+                }.onCancel {
+                    textView.append("\nTask Cancelled")
                 }
             }.start() //this start method belongs to outer task and not inner task
         //NOTE: You should not call start method of chained task. It will be called by outer task when it is completed.
-    }
-
-    private fun startCancellableTask(textView: TextView) {
-        //Cancelling of task
-        val task = Task {
-            var i = 10
-            while (i-- > 0) {
-                ensureActive() // Checks if the task is cancelled. If yes then moves to onCancel
-                publishProgress(i, "Running...")
-                sleep(500)
-            }
-            "Hello"
-        }.onStart {
-            textView.append("\n\n\nStarting Cancellable Task: Click here to cancel")
-        }.onEnd {
-            textView.append("\nTask Completed")
-        }.onProgress {
-            textView.append(
-                "\nTask Progress ${(10 - it[0] as Int) * 10}% ${it[1]}"
-            )
-        }.onResult {
-            textView.append("\nTask result $it")
-        }.onCancel {
-            textView.append("\nTask Cancelled")
-        }
-        task.start()
-
-        textView.setOnClickListener { task.cancel() }
     }
 }
