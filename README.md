@@ -51,9 +51,10 @@ Optional methods
 2. onEnd
 3. onResult
 4. onError
-5. doInBackground
-6. doInForeground
-7. then
+5. onCancel
+6. doInBackground
+7. doInForeground
+8. then
 
 ### Complete Example
 ```
