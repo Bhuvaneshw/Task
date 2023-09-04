@@ -25,7 +25,7 @@ interface AbstractTask<T> {
     fun onStart(onStart: (() -> Unit)?): AbstractTask<T>
 
     /**
-     * Called after the execution of task regardless the completion of the task (Whether the task is executed without error)
+     * Called after the execution of task regardless the completion of the task (Whether the task is executed without error or not)
      */
     fun onEnd(onEnd: (() -> Unit)?): AbstractTask<T>
 

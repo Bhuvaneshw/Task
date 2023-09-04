@@ -40,6 +40,8 @@ class TaskDemoActivity : AppCompatActivity() {
                 textView.append("\nResult $result")
             }.onError { error ->
                 textView.append("\nError " + error.message)
+            }.onCancel {
+                textView.append("\nTask Cancelled")
             }.onProgress {
                 textView.append("\nProgress ${it[0]}")
             }.then {

@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void startJ1_8Task(TextView textView) {
-        //Java 1.8
+        //Java 1.8+
         Task.with(task -> {//Outer Task
                     Task.Foreground.start(() -> Toast.makeText(MainActivity.this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
 
@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 .onEnd(() -> textView.append("\n" + "Task 2 Finished"))
                 .onResult(result -> textView.append("\nTask 2 " + result))
                 .onError(error -> textView.append("\nTask 2 " + error.getMessage()))
+                .onCancel(() -> textView.append("\nTask 2 Cancelled"))
                 .onProgress(progress -> textView.append("\nTask 2 Progress " + progress[0]))
                 .then(result ->
                         new Task<>(t2 -> {//Inner Task
@@ -135,8 +136,8 @@ public class MainActivity extends AppCompatActivity {
                                     startCancellableTask(textView);
                                 }
                         ).onProgress(progress -> textView.append("\nChained Task 2 Progress " + progress[0])
-                        ).onResult(result2 -> textView.append("\n" + result2)))
-                .start();//this start method belongs to outer task and not inner task
+                        ).onResult(result2 -> textView.append("\n" + result2))
+                ).start();//this start method belongs to outer task and not inner task
         //NOTE: You should not call start method of chained task. It will be called by outer task when it is completed.
     }
 

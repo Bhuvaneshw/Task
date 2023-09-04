@@ -50,7 +50,7 @@ class Task<T>(private val runnable: Task<T>.() -> T) : AbstractTask<T> {
     }
 
     /**
-     * Called after the execution of task regardless the completion of the task (Whether the task is executed without error)
+     * Called after the execution of task regardless the completion of the task (Whether the task is executed without error or not)
      */
     override fun onEnd(onEnd: (() -> Unit)?): Task<T> {
         this.onEnd = onEnd

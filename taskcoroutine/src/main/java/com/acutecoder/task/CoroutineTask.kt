@@ -32,8 +32,9 @@ class CoroutineTask<T>(
     companion object {
         private const val SCOPE_NAME = "TaskScope"
         val DEFAULT_SCOPE = CoroutineScope(CoroutineName(SCOPE_NAME))
-        val uiThreadHandler = Handler(Looper.getMainLooper())
-        fun scopeWithDispatcher(dispatcher: CoroutineDispatcher): CoroutineScope {
+
+        private val uiThreadHandler = Handler(Looper.getMainLooper())
+        private fun scopeWithDispatcher(dispatcher: CoroutineDispatcher): CoroutineScope {
             return CoroutineScope(dispatcher + CoroutineName(SCOPE_NAME))
         }
     }
@@ -74,7 +75,7 @@ class CoroutineTask<T>(
     }
 
     /**
-     * Called after the execution of task regardless the completion of the task (Whether the task is executed without error)
+     * Called after the execution of task regardless the completion of the task (Whether the task is executed without error or not)
      */
     override fun onEnd(onEnd: (() -> Unit)?): CoroutineTask<T> {
         this.onEnd = onEnd
@@ -97,6 +98,9 @@ class CoroutineTask<T>(
         return this
     }
 
+    /**
+     * Starts the execution of the task
+     */
     override fun start() {
         try {
             isCancelled = false

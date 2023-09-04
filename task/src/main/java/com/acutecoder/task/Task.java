@@ -69,7 +69,7 @@ public class Task<T> {
     }
 
     /**
-     * Called after the execution of task regardless the completion of the task (Whether the task is executed without error)
+     * Called after the execution of task regardless the completion of the task (Whether the task is executed without error or not)
      */
     public Task<T> onEnd(TaskCallback onEnd) {
         this.onEnd = onEnd;
