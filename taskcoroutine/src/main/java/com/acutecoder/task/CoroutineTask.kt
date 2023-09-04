@@ -51,22 +51,6 @@ class CoroutineTask<T>(
     private var job: Job? = null
 
     /**
-     * Called when the task is successfully completed without error
-     */
-    override fun onResult(taskResult: ((result: T) -> Unit)?): CoroutineTask<T> {
-        this.taskResult = taskResult
-        return this
-    }
-
-    /**
-     * Called when the task is failed
-     */
-    override fun onError(taskError: ((error: Exception) -> Unit)?): CoroutineTask<T> {
-        this.taskError = taskError
-        return this
-    }
-
-    /**
      * Called before the execution of task
      */
     override fun onStart(onStart: (() -> Unit)?): CoroutineTask<T> {
@@ -82,6 +66,22 @@ class CoroutineTask<T>(
         return this
     }
 
+
+    /**
+     * Called when the task is successfully completed without error
+     */
+    override fun onResult(taskResult: ((result: T) -> Unit)?): CoroutineTask<T> {
+        this.taskResult = taskResult
+        return this
+    }
+
+    /**
+     * Called when the task is failed
+     */
+    override fun onError(taskError: ((error: Exception) -> Unit)?): CoroutineTask<T> {
+        this.taskError = taskError
+        return this
+    }
     /**
      * Called when the execution of task is cancelled
      */

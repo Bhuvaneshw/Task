@@ -26,22 +26,6 @@ class Task<T>(private val runnable: Task<T>.() -> T) : AbstractTask<T> {
     private var next: ((T) -> AbstractTask<*>)? = null
 
     /**
-     * Called when the task is successfully completed without error
-     */
-    override fun onResult(taskResult: ((result: T) -> Unit)?): Task<T> {
-        this.taskResult = taskResult
-        return this
-    }
-
-    /**
-     * Called when the task is failed
-     */
-    override fun onError(taskError: ((error: Exception) -> Unit)?): Task<T> {
-        this.taskError = taskError
-        return this
-    }
-
-    /**
      * Called before the execution of task
      */
     override fun onStart(onStart: (() -> Unit)?): Task<T> {
@@ -54,6 +38,22 @@ class Task<T>(private val runnable: Task<T>.() -> T) : AbstractTask<T> {
      */
     override fun onEnd(onEnd: (() -> Unit)?): Task<T> {
         this.onEnd = onEnd
+        return this
+    }
+
+    /**
+     * Called when the task is successfully completed without error
+     */
+    override fun onResult(taskResult: ((result: T) -> Unit)?): Task<T> {
+        this.taskResult = taskResult
+        return this
+    }
+
+    /**
+     * Called when the task is failed
+     */
+    override fun onError(taskError: ((error: Exception) -> Unit)?): Task<T> {
+        this.taskError = taskError
         return this
     }
 

@@ -1,10 +1,13 @@
 # Task
 Android Library for background and foreground tasks.
- [See Documentation](DOCUMENTATION.md)
+## Documentation
+1. **[Coroutine](documentation/coroutinetask)** (Recommended)
+2. **[Task(Kotlin)](documentation/taskkt)**
+3. **[Task(Java)](documentation/task)**
 
 ## Latest Version
 [![](https://jitpack.io/v/Bhuvaneshw/task.svg)](https://jitpack.io/#Bhuvaneshw/task)
-# Example (Kotlin+Coroutine)
+# Example (Kotlin+Coroutine) (Recommended)
 ## Gradle Setup
 Add it in your root build.gradle at the end of repositories:
 ```
@@ -32,7 +35,7 @@ CoroutineTask {                 // this:Task<Nothing?>
 }).start();
 ```
 
-## Task with all Callbacks
+## Task with all Callbacks and Chaining of Tasks
 ```
 CoroutineTask {                                //Outer Task
     Task.Foreground.start {
@@ -59,7 +62,7 @@ CoroutineTask {                                //Outer Task
     textView.append("\nTask Cancelled")
 }.onProgress {
     textView.append("\nProgress ${it[0]}")
-}.then {
+}.then {                         //Chaining next task
     Task {                       //Inner Task
         sleep(2000)
         publishProgress("Result of outer task is $it")
@@ -109,6 +112,33 @@ task.start()
 
 textView.setOnClickListener { task.cancel() }
 ```
+## Task With Scope
+
+```
+CoroutineTask(scope = CoroutineScope(Dispatchers.Default + CoroutineName("myScope"))) {                 // this:Task<Nothing?>
+    // Do some task
+    sleep(1000)                 //sleep belongs to task object
+    null                        //return value
+}).start();
+```
+### Task With GlobalScope
+
+```
+CoroutineTask(scope = GlobalScope) {                 // this:Task<Nothing?>
+    // Do some task
+    sleep(1000)                 //sleep belongs to task object
+    null                        //return value
+}).start();
+```
+## Task With Dispatcher
+
+```
+CoroutineTask(Dispatchers.Default) {                 // this:Task<Nothing?>
+    // Do some task
+    sleep(1000)                 //sleep belongs to task object
+    null                        //return value
+}).start();
+```
 
 # Example (Kotlin)
 ## Gradle Setup
@@ -157,7 +187,7 @@ Task {                          // this:Task<Nothing?>
 5. onCancel
 6. then
 
-## Task with all callbacks
+## Task with all callbacks and chaining of tasks
 ```
 Task {                                //Outer Task
     Task.Foreground.start {
@@ -184,7 +214,7 @@ Task {                                //Outer Task
     textView.append("\nTask Cancelled")
 }.onProgress {
     textView.append("\nProgress ${it[0]}")
-}.then {
+}.then {                         //Chaining tasks
     Task {                       //Inner Task
         sleep(2000)
         publishProgress("Result of outer task is $it")
@@ -229,6 +259,81 @@ val task = Task {
 task.start()
 
 textView.setOnClickListener { task.cancel() }
+```
+
+# Example (Coroutine + Task-Kotlin)
+
+## Gradle Setup
+Add it in your root build.gradle at the end of repositories:
+```
+allprojects {
+    repositories {
+        //...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+Add the dependency
+```
+dependencies {
+    implementation 'com.github.Bhuvaneshw.task:java:1.1.5'
+    implementation 'com.github.Bhuvaneshw.task:coroutine:1.1.5'
+}
+```
+
+## Sample
+```
+Task {                                          //Outer Task (Task)
+    Task.Foreground.start {
+        Toast.makeText(
+            this@CombinationDemoActivity,
+            "This is how you can toast with Task",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+    sleep(500)
+    publishProgress(25)
+    sleep(500)
+    publishProgress(56)
+    sleep(800)
+    publishProgress(100)
+    sleep(500)
+    "T"
+}.doInBackground() //or .doInForeground() # default it will be background task
+.onStart {
+    textView.text = "Starting task"
+}.onEnd {
+    textView.append("\n" + "Task Finished")
+}.onResult { result ->
+    textView.append("\nResult $result")
+}.onError { error ->
+    textView.append("\nError " + error.message)
+}.onProgress {
+    textView.append("\nProgress ${it[0]}")
+}.then {
+    CoroutineTask {                         //Inner Task (CoroutineTask)
+        var i = 10
+        while (i-- > 0) {
+            publishProgress(i, "Running...")
+            sleep(500)
+        }
+        "Coroutine Task Result"
+    }.onStart {
+        textView.append("\n\n\nStarting Coroutine Task:\n")
+    }.onEnd {
+        textView.append("\nTask Completed")
+    }.onProgress {
+        textView.append(
+            "\nTask Progress ${(10 - it[0] as Int) * 10}% ${it[1]}"
+        )
+    }.onResult {
+        textView.append("\nTask result $it")
+    }.onCancel {
+        textView.append("\nTask Cancelled")
+    }
+}.start()                                 //this start method belongs to outer task and not inner task
+//NOTE: You should not call start method of chained task. It will be called by outer task when it is completed.
 ```
 
 # Example (Java)
@@ -278,7 +383,7 @@ Task.with(task -> {             //or new Task<>(task -> {
 5. onCancel
 6. then
 
-## Simple Task with all callbacks
+## Simple Task with all callbacks and chaining of tasks
 ```
 new Task<>(task -> {             //Outer Task
     Task.Foreground.start(() -> Toast.makeText(this, "This is how you can toast with Task", Toast.LENGTH_SHORT).show());
@@ -299,7 +404,7 @@ new Task<>(task -> {             //Outer Task
 .onError(error -> textView.append("\nTask 2 " + error.getMessage()))
 .onCancel(() -> textView.append("\nTask 2 Cancelled"))
 .onProgress(progress -> textView.append("\nTask 2 Progress " + progress[0]))
-.then(result ->
+.then(result ->                //Chaining task
     new Task<>(t2 -> {         //Inner Task
         t2.sleep(2000);
         t2.publishProgress("Result of outer task is " + result);
@@ -381,10 +486,10 @@ new Task<>(new TaskRunnable<String>() { //Outer Task
         textView.append("\nTask 1 Progress " + progress[0]);
     }
 })
-.then(new NextTask<String>() {
+.then(new NextTask<String>() {                            //Chaining task
     @Override
     public Task<?> run(String result) {
-        return new Task<>(new TaskRunnable<String>() {//Inner Task
+        return new Task<>(new TaskRunnable<String>() {   //Inner Task
             @Override
             public String run(Task<String> t2) throws Exception {
                 t2.sleep(2000);
@@ -413,8 +518,6 @@ new Task<>(new TaskRunnable<String>() { //Outer Task
 .start();//this start method belongs to outer task and not inner task
 //NOTE: You should not call start method of chained task. It will be called by outer task when it is completed.
 ```
-
-# Documentation
 
 ## License
 ```

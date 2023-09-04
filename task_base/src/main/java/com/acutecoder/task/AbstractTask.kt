@@ -10,16 +10,6 @@ package com.acutecoder.task
 interface AbstractTask<T> {
 
     /**
-     * Called when the task is successfully completed without error
-     */
-    fun onResult(taskResult: ((result: T) -> Unit)?): AbstractTask<T>
-
-    /**
-     * Called when the task is failed
-     */
-    fun onError(taskError: ((error: Exception) -> Unit)?): AbstractTask<T>
-
-    /**
      * Called before the execution of task
      */
     fun onStart(onStart: (() -> Unit)?): AbstractTask<T>
@@ -28,6 +18,16 @@ interface AbstractTask<T> {
      * Called after the execution of task regardless the completion of the task (Whether the task is executed without error or not)
      */
     fun onEnd(onEnd: (() -> Unit)?): AbstractTask<T>
+
+    /**
+     * Called when the task is successfully completed without error
+     */
+    fun onResult(taskResult: ((result: T) -> Unit)?): AbstractTask<T>
+
+    /**
+     * Called when the task is failed
+     */
+    fun onError(taskError: ((error: Exception) -> Unit)?): AbstractTask<T>
 
     /**
      * Called when the execution of task is cancelled

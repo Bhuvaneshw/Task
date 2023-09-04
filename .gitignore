@@ -7,3 +7,4 @@
 /app_taskkt/build/
 /.idea/
 *.iml
+/local.properties

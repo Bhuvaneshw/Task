@@ -45,22 +45,6 @@ public class Task<T> {
     }
 
     /**
-     * Called when the task is successfully completed without error
-     */
-    public Task<T> onResult(TaskResult<T> taskResult) {
-        this.taskResult = taskResult;
-        return this;
-    }
-
-    /**
-     * Called when the task is failed
-     */
-    public Task<T> onError(TaskError taskError) {
-        this.taskError = taskError;
-        return this;
-    }
-
-    /**
      * Called before the execution of task
      */
     public Task<T> onStart(TaskCallback onStart) {
@@ -73,6 +57,22 @@ public class Task<T> {
      */
     public Task<T> onEnd(TaskCallback onEnd) {
         this.onEnd = onEnd;
+        return this;
+    }
+
+    /**
+     * Called when the task is successfully completed without error
+     */
+    public Task<T> onResult(TaskResult<T> taskResult) {
+        this.taskResult = taskResult;
+        return this;
+    }
+
+    /**
+     * Called when the task is failed
+     */
+    public Task<T> onError(TaskError taskError) {
+        this.taskError = taskError;
         return this;
     }
 
