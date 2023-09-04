@@ -1,9 +1,9 @@
 # Task
 Android Library for background and foreground tasks.
 ## Documentation
-1. **[Coroutine](documentation/coroutinetask)** (Recommended)
-2. **[Task(Kotlin)](documentation/taskkt)**
-3. **[Task(Java)](documentation/task)**
+1. **[Coroutine](documentation/coroutinetask//README.md)** (Recommended)
+2. **[Task(Kotlin)](documentation/taskkt/README.md)**
+3. **[Task(Java)](documentation/task/README.md)**
 
 ## Latest Version
 [![](https://jitpack.io/v/Bhuvaneshw/task.svg)](https://jitpack.io/#Bhuvaneshw/task)
