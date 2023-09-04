@@ -5,7 +5,7 @@ Starting large number of Threads may leads to out of memory.
 
  [See Examples](../../README.md)
 
-# Task (Kotlin) Documentation
+# Task (Java) Documentation
 
 ## Constructor
 ```
