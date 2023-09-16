@@ -277,7 +277,7 @@ allprojects {
 Add the dependency
 ```
 dependencies {
-    implementation 'com.github.Bhuvaneshw.task:java:1.1.5'
+    implementation 'com.github.Bhuvaneshw.task:kotlin:1.1.5'
     implementation 'com.github.Bhuvaneshw.task:coroutine:1.1.5'
 }
 ```
