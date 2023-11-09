@@ -32,7 +32,7 @@ CoroutineTask {                 // this:Task<Nothing?>
     // Do some task
     sleep(1000)                 //sleep belongs to task object
     null                        //return value
-}).start();
+}.start();
 ```
 
 ## Task with all Callbacks and Chaining of Tasks
@@ -119,7 +119,7 @@ CoroutineTask(scope = CoroutineScope(Dispatchers.Default + CoroutineName("myScop
     // Do some task
     sleep(1000)                 //sleep belongs to task object
     null                        //return value
-}).start();
+}.start();
 ```
 ### Task With GlobalScope
 
@@ -128,7 +128,7 @@ CoroutineTask(scope = GlobalScope) {                 // this:Task<Nothing?>
     // Do some task
     sleep(1000)                 //sleep belongs to task object
     null                        //return value
-}).start();
+}.start();
 ```
 ## Task With Dispatcher
 
@@ -137,7 +137,7 @@ CoroutineTask(Dispatchers.Default) {                 // this:Task<Nothing?>
     // Do some task
     sleep(1000)                 //sleep belongs to task object
     null                        //return value
-}).start();
+}.start();
 ```
 
 # Example (Kotlin)
@@ -165,7 +165,7 @@ Task {                          // this:Task<Nothing?>
     // Do some task
     sleep(1000)                 //sleep belongs to task object
     null                        //return value
-}).start();
+}.start();
 ```
 
 ## Simple Task with Toast
@@ -176,7 +176,7 @@ Task {                          // this:Task<Nothing?>
     }
     sleep(1000)                 //sleep belongs to task object
     null                        //return value
-}).start();
+}.start();
 ```
 
 ## Optional Callbacks
