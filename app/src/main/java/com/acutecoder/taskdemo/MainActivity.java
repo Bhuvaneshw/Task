@@ -7,13 +7,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.acutecoder.task.NextTask;
-import com.acutecoder.task.OnProgress;
-import com.acutecoder.task.Task;
-import com.acutecoder.task.TaskCallback;
-import com.acutecoder.task.TaskError;
-import com.acutecoder.task.TaskResult;
-import com.acutecoder.task.TaskRunnable;
+import com.acutecoder.task.java.NextTask;
+import com.acutecoder.task.java.OnProgress;
+import com.acutecoder.task.java.Task;
+import com.acutecoder.task.java.TaskCallback;
+import com.acutecoder.task.java.TaskError;
+import com.acutecoder.task.java.TaskResult;
+import com.acutecoder.task.java.TaskRunnable;
 
 public class MainActivity extends AppCompatActivity {
 

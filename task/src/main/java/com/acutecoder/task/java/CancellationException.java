@@ -1,4 +1,4 @@
-package com.acutecoder.task;
+package com.acutecoder.task.java;
 
 public class CancellationException extends RuntimeException {
     public CancellationException() {

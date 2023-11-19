@@ -1,4 +1,4 @@
-package com.acutecoder.task;
+package com.acutecoder.task.java;
 
 public class TaskException extends RuntimeException {
     public TaskException(Exception e, boolean isBackground) {
