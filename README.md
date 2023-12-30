@@ -3,11 +3,11 @@ Task Handling library for Kotlin and Android
 This library is based on Kotlin Coroutine and Thread
 
 Contents:<br>
-<a href="#setup">1. Setup</a><br>
-<a href="#setup">2. Usage</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#setup">2.1 CoTask</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#setup">2.2 ThreadTask</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#setup">2.3 JTask</a><br>
+<a href="#1setup">1. Setup</a><br>
+<a href="#1setup">2. Usage</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21setup">2.1 CoTask</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22setup">2.2 ThreadTask</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23setup">2.3 JTask</a><br>
 
 ## 1.Setup
 ### 1.1 Gradle - Groovy
