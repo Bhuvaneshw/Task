@@ -1,5 +1,5 @@
 # Task
-Task Handling library for Kotlin and Android
+Task Handling library for Kotlin and Android.
 This library is based on Kotlin Coroutine and Thread
 
 Contents:<br>
