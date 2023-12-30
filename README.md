@@ -4,13 +4,48 @@ This library is based on Kotlin Coroutine and Thread
 
 Contents:<br>
 <a href="#1setup">1. Setup</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-kotlin-dsl">1.1 Kotlin DSL</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-groovy-dsl">1.2 Groovy DSL</a><br>
 <a href="#1setup">2. Usage</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21setup">2.1 CoTask</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22setup">2.2 ThreadTask</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23setup">2.3 JTask</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-cotask---coroutine-task-for-kotlin">2.1 CoTask</a> (Recommended)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-threadtask---for-kotlin">2.2 ThreadTask</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-jtask---for-java">2.3 JTask</a><br>
+<a href="#3license">3. License</a><br>
 
-## 1.Setup
-### 1.1 Gradle - Groovy
+## 1. Setup
+
+### 1.1 Gradle - Kotlin DSL
+Step 1: Project level build.gradle / settings.gradle
+<pre>
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven {
+            url = URI("https://jitpack.io")
+        }
+    }
+}
+</pre>
+
+Step 2: Module level build.gradle<br>
+<pre>
+dependencies {
+    <b>implementation("com.github.Bhuvaneshw.task:<i>$module:$version</i>")</b>
+}
+</pre>
+Replace <b>$module</b> with <i><b>cotask, threadtask</b> or <b>jtask</b></i><br>
+Replace <b>$version</b> with latest version<br>
+Latest Version: [![](https://jitpack.io/v/Bhuvaneshw/task.svg)](https://jitpack.io/#Bhuvaneshw/task)<br>
+<b>Example:</b>
+<pre>
+dependencies {
+    <b>implementation("com.github.Bhuvaneshw.task:<i>cotask:2.0.0</i>")</b>
+}
+</pre>
+
+### 1.2 Gradle - Groovy DSL
 Step 1: Project level build.gradle / settings.gradle
 <pre>
 dependencyResolutionManagement {
@@ -28,18 +63,8 @@ dependencies {
     <b>implementation 'com.github.Bhuvaneshw.task:<i>$module:$version</i>'</b>
 }
 </pre>
-Replace <b>$module</b> with <i><b>cotask, threadtask</b> or <b>jtask</b></i><br>
-Replace <b>$version</b> with latest version<br>
-Latest Version: [![](https://jitpack.io/v/Bhuvaneshw/task.svg)](https://jitpack.io/#Bhuvaneshw/task)<br>
-<b>Example:</b>
-<pre>
-dependencies {
-    <b>implementation 'com.github.Bhuvaneshw.task:<i>cotask:2.0.0</i>'</b>
-}
-</pre>
 
-## 2.Usage
-Usage of the library
+## 2. Usage
 ### 2.1 CoTask - Coroutine Task, for Kotlin<br>
 
 Simple CoTask
@@ -325,3 +350,101 @@ StartableThreadTask {
     appendStatus("Result $result")
 }
 </pre>
+<hr>
+
+### 2.3 JTask - for Java
+
+Simple JTask
+<pre>
+JTask.with(task -> {
+    task.sleep(1000);
+    return "hello";
+}).start();
+</pre>
+<br>
+
+Callbacks and Error handling
+<pre>
+JTask.with(task -> {
+    int i = 0;
+    while (i < 10) {
+        task.ensureActive();                         // Mandatory if you cancel the task!
+         task.publishProgress((i + 1) * 10);
+        i++;
+    }
+    return "hello";
+}).onStart(() -> {
+    log("OnStart");
+}).onEnd(() -> {
+    log("OnEnd");
+}).onCancel(() -> {
+    log("OnCancel");
+}).onError((error) -> {
+    log("OnError : " + error.getLocalizedMessage());
+}).onProgress((progress) -> {
+    log("Progress: " + ((int) progress[0]));
+}).onResult((result) -> {
+    log("Result: " + result);
+}).start();
+</pre>
+<br>
+
+Chaining Tasks
+<pre>
+new JTask<String>(task -> {
+    task.sleep(1000);
+    return "123";
+}).then(result ->
+    new JTask<Integer>(task -> {
+        task.sleep(1000);
+        return Integer.parseInt(result);
+    }).onStart(() -> {
+        log("OnStart");
+    }).onResult(intResult -> {
+        log("Result: " + intResult);
+    })
+).start();
+</pre>
+
+Cancelling Task
+<pre>
+JTask<?> task = JTask.with(t -> {
+    int i = 0;
+    while (i < 10) {
+        t.ensureActive();       // Mandatory if you cancel the task!
+        t.publishProgress((i + 1) * 10);
+        i++;
+    }
+    return "hello";
+}).onCancel(() -> {
+    log("OnCancel");
+});
+task.start();
+
+new Timer().schedule(new TimerTask() {
+    @Override
+    public void run() {
+        task.cancel();
+    }
+}, 1000);
+</pre>
+<hr>
+
+## 3. License
+```
+    Task - Task Handling Library
+    Copyright (C) 2024  Bhuvaneshwaran
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```
