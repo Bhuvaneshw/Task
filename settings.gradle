@@ -10,16 +10,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven{
-            url 'https://jitpack.io'
-        }
     }
 }
-rootProject.name = "Task"
-include ':app'
-include ':app_taskkt'
 
-include ':task'
-include ':taskkt'
-include ':taskcoroutine'
-include ':task_base'
+rootProject.name = "Task"
+include(":app")
+include(":cotask")
+include(":threadtask")
+include ':jtask'
