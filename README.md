@@ -44,6 +44,8 @@ Latest Version: [![](https://jitpack.io/v/Bhuvaneshw/task.svg)](https://jitpack.
 <pre>
 dependencies {
     <b>implementation("com.github.Bhuvaneshw.task:<i>cotask:2.0.0</i>")</b>
+    <b>implementation("com.github.Bhuvaneshw.task:<i>threadtask:2.0.0</i>")</b>
+    <b>implementation("com.github.Bhuvaneshw.task:<i>jtask:2.0.0</i>")</b>
 }
 </pre>
 
