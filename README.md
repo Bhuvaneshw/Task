@@ -40,7 +40,8 @@ dependencies {
 
 ## 2.Usage
 Usage of the library
-### 2.1 CoTask - Coroutine Task<br>
+### 2.1 CoTask - Coroutine Task, for Kotlin<br>
+
 Simple CoTask
 <pre>
 CoTask {              // Default dispatcher will be Dispatchers.Default
@@ -204,4 +205,123 @@ GlobalScope.coTask { }
 GlobalScope.progressedCoTask { publishProgress(0) }
 GlobalScope.startableCoTask { }
 GlobalScope.startableProgressedCoTask { publishProgress(0) }
+</pre>
+<hr>
+
+### 2.2 ThreadTask - for Kotlin
+<br>Note: Pausing and Resuming is not available in ThreadTask
+
+Simple Thread Task
+<pre>
+ThreadTask {
+    delay(1000)       // Your expensive task
+}
+</pre>
+<br>
+
+Callbacks
+<pre>
+ThreadTask {    // this: Task&lt;String, Nothing&gt; String => return type
+    delay(1000)
+    "My valuable result"
+}.onEnd {
+    appendStatus("ThreadTask1 completed")
+}.onCancelled {
+    appendStatus("ThreadTask1 cancelled")
+}.onResult { result: String ->
+    appendStatus("ThreadTask1 result $result")
+}
+</pre>
+<br>
+
+Error Handling
+<pre>
+ThreadTask {
+    delay(4000)
+    5 / 0                     // Divide by zero
+}.catch {
+    appendStatus("ThreadTask error $it")
+}
+// Or
+ThreadTask {
+    delay(4000)
+    5 / 0                    // Divide by zero
+}.logError("ThreadTask")
+</pre>
+<br>
+
+Chaining Tasks
+<pre>
+ThreadTask {               // this: Task&lt;String, Nothing&gt; String => return type
+    delay(1000)
+    "500"
+}.then { it: String ->     // this: Task<Int, Nothing>, it:String => the previous return value
+    delay(2000)
+    it.toInt()
+}.then { it: Int ->
+    it / 5f
+}.onResult { result: Float ->
+    appendStatus("ThreadTask2 result $result")
+}
+</pre>
+<br>
+
+ProgressedThreadTask
+<pre>
+ProgressedThreadTask {    // this: Task&lt;String, Int&gt; String => return type, Int => Progress Type
+    delay(1000)
+    publishProgress(50)
+    delay(1000)
+    publishProgress(99)
+    "My valuable result"
+}.onProgress { progress: Int ->
+    appendStatus("ThreadTask3 progress $progress")
+}.onResult { result: String ->
+    appendStatus("ThreadTask3 result $result")
+}
+</pre>
+<br>
+
+Cancelling Task
+<pre>
+val task = ProgressedThreadTask {
+    var i = 1
+    while (i <= 100) {
+        publishProgress(i)
+        ensureActive()            // Mandatory for ThreadTask to check for cancellation and calling onCancelled callback
+        delay(1000)
+        i += 10
+    }
+}.onProgress {
+    appendStatus("ThreadTask4 progress $it")
+}.onCancelled {
+    appendStatus("ThreadTask4 cancelled")
+}
+
+// Cancelling the task after 1.5 seconds
+ThreadTask {
+    delay(1500)
+    task.cancel()
+}
+</pre>
+<br>
+
+Startable Tasks
+<pre>
+StartableThreadTask {
+    delay(1000)
+}.start()
+StartableProgressedThreadTask {
+    publishProgress(10)
+    delay(1000)
+    publishProgress(100)
+}.start()
+
+// If you return any data, then
+StartableThreadTask {
+    delay(1111)
+    "My value"
+}.start { result: String ->        // called before on result callback
+    appendStatus("Result $result")
+}
 </pre>
