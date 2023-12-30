@@ -3,14 +3,16 @@ Task Handling library for Kotlin and Android
 This library is based on Kotlin Coroutine and Thread
 
 Contents:<br>
-<a href="#1setup">1. Setup</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-kotlin-dsl">1.1 Kotlin DSL</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-groovy-dsl">1.2 Groovy DSL</a><br>
-<a href="#1setup">2. Usage</a><br>
+<a href="#1-setup">1. Setup</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-gradle---kotlin-dsl">1.1 Kotlin DSL</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-gradle---groovy-dsl">1.2 Groovy DSL</a><br>
+<a href="#2-usage">2. Usage</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-cotask---coroutine-task-for-kotlin">2.1 CoTask</a> (Recommended)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-threadtask---for-kotlin">2.2 ThreadTask</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-jtask---for-java">2.3 JTask</a><br>
-<a href="#3license">3. License</a><br>
+<a href="#3-license">3. License</a>
+<hr>
+<br>
 
 ## 1. Setup
 
@@ -37,7 +39,7 @@ dependencies {
 </pre>
 Replace <b>$module</b> with <i><b>cotask, threadtask</b> or <b>jtask</b></i><br>
 Replace <b>$version</b> with latest version<br>
-Latest Version: [![](https://jitpack.io/v/Bhuvaneshw/task.svg)](https://jitpack.io/#Bhuvaneshw/task)<br>
+Latest Version: [![](https://jitpack.io/v/Bhuvaneshw/task.svg)](https://jitpack.io/#Bhuvaneshw/task)<br><br>
 <b>Example:</b>
 <pre>
 dependencies {
@@ -63,6 +65,8 @@ dependencies {
     <b>implementation 'com.github.Bhuvaneshw.task:<i>$module:$version</i>'</b>
 }
 </pre>
+<hr>
+<br>
 
 ## 2. Usage
 ### 2.1 CoTask - Coroutine Task, for Kotlin<br>
@@ -232,6 +236,7 @@ GlobalScope.startableCoTask { }
 GlobalScope.startableProgressedCoTask { publishProgress(0) }
 </pre>
 <hr>
+<br>
 
 ### 2.2 ThreadTask - for Kotlin
 <br>Note: Pausing and Resuming is not available in ThreadTask
@@ -351,6 +356,7 @@ StartableThreadTask {
 }
 </pre>
 <hr>
+<br>
 
 ### 2.3 JTask - for Java
 
@@ -429,6 +435,7 @@ new Timer().schedule(new TimerTask() {
 }, 1000);
 </pre>
 <hr>
+<br>
 
 ## 3. License
 ```
