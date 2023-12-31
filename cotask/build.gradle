@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id 'maven-publish'
 }
 
 android {
@@ -29,6 +30,25 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
+    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.acutecoder'
+                artifactId = 'cotask'
+                version = '1.1.9'
+            }
+        }
     }
 }
 
