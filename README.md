@@ -1,6 +1,12 @@
 # Task
 Task Handling library for Kotlin and Android.
 This library is based on Kotlin Coroutine and Thread
+<br><br>
+<b>Why CoTask</b><br>
+1. Pause CoTask<br>
+2. Resume CoTask<br>
+3. Publish progress to main thread<br>
+4. Error handling and Other callbacks<br><br>
 
 Contents:<br>
 <a href="#1-setup">1. Setup</a><br>
