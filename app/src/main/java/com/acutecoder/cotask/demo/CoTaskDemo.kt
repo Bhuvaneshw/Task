@@ -106,12 +106,11 @@ fun coTaskExample(mainActivity: MainActivity) = with(mainActivity) {
 
     fun cancellingCoTask() {
         val task = ProgressedCoTask {
-            delay(1000)
-            publishProgress(40)
-            delay(1000)
-            publishProgress(80)
-            delay(1000)
-            publishProgress(99)
+            var i = 10
+            while (i-- > 0) {
+                ensureActive()            // enabling that the task can be paused/cancelled here
+                publishProgress(10 - i)
+            }
         }.onProgress {
             appendStatus("CoTask4 progress $it")
         }.onCancelled {
@@ -129,7 +128,7 @@ fun coTaskExample(mainActivity: MainActivity) = with(mainActivity) {
         val task = ProgressedCoTask {
             var i = 10
             while (i-- > 0) {
-                ensureActive(ensurePause = true)            // enabling that the job can be paused/cancelled
+                ensureActive()            // enabling that the task can be paused/cancelled here
                 publishProgress(10 - i)
             }
         }.onProgress {

@@ -37,9 +37,12 @@ android {
 }
 
 dependencies {
-    implementation(project(":cotask"))
-    implementation(project(":threadtask"))
-    implementation(project(":jtask"))
+//    implementation(project(":cotask"))
+//    implementation(project(":threadtask"))
+//    implementation(project(":jtask"))
+    implementation("com.github.Bhuvaneshw.task:cotask:V1.1.7")
+    implementation("com.github.Bhuvaneshw.task:threadtask:V1.1.7")
+    implementation("com.github.Bhuvaneshw.task:jtask:V1.1.7")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
