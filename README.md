@@ -219,6 +219,7 @@ Startable Tasks
 <pre>
 StartableCoTask {
     delay(1000)
+}.onStart {
 }.start()
 StartableProgressedCoTask {
     publishProgress(10)
@@ -348,6 +349,7 @@ Startable Tasks
 <pre>
 StartableThreadTask {
     delay(1000)
+}.onStart{
 }.start()
 StartableProgressedThreadTask {
     publishProgress(10)
