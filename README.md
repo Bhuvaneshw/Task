@@ -31,7 +31,7 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
         maven {
-            <b>url = URI("https://jitpack.io")</b>
+            <b>url = uri("https://jitpack.io")</b>
         }
     }
 }
