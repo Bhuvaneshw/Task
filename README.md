@@ -102,6 +102,20 @@ CoTask {              // Task&lt;Unit,Nothing&gt;:CoroutineScope
 </pre>
 <br>
 
+Using Dispatcher
+<pre>
+CoTask(Dispatchers.IO) {
+    delay(1000L)
+}
+
+// Extensions
+CoTask withIO {
+}
+// or
+CoTask.withIO {
+}
+</pre>
+
 Callbacks
 <pre>
 CoTask {    // this: Task&lt;String, Nothing&gt; String => return type
@@ -115,7 +129,7 @@ CoTask {    // this: Task&lt;String, Nothing&gt; String => return type
     appendStatus("CoTask1 completed")
 }.onCancelled {
     appendStatus("CoTask1 cancelled")
-}.onResult { result: String ->
+}.onResult { result: String -&gt;
     appendStatus("CoTask1 result $result")
 }
 </pre>
@@ -142,12 +156,12 @@ Chaining Tasks
 CoTask {                   // this: Task&lt;String, Nothing&gt; String => return type
     delay(1000)
     "500"
-}.then { it: String ->     // this: Task<Int, Nothing>, it:String => the previous return value
+}.then { it: String -&gt;     // this: Task&lt;Int, Nothing&gt;, it:String => the previous return value
     delay(2000)
     it.toInt()
-}.then { it: Int ->
+}.then { it: Int -&gt;
     it / 5f
-}.onResult { result: Float ->
+}.onResult { result: Float -&gt;
     appendStatus("CoTask2 result $result")
 }
 </pre>
@@ -161,9 +175,9 @@ ProgressedCoTask {    // this: Task&lt;String, Int&gt; String => return type, In
     delay(1000)
     publishProgress(99)
     "My valuable result"
-}.onProgress { progress: Int ->
+}.onProgress { progress: Int -&gt;
     appendStatus("CoTask3 progress $progress")
-}.onResult { result: String ->
+}.onResult { result: String -&gt;
     appendStatus("CoTask3 result $result")
 }
 </pre>
@@ -198,6 +212,8 @@ val task = ProgressedCoTask {
         ensureActive()            // enabling that the task can be paused/cancelled here
         publishProgress(10 - i)
     }
+//  launchPausing {  }.pause()
+//  asyncPausing {  }.pause()
 }.onProgress {
     appendStatus("CoTask5 progress $it")
 }.onPause {
@@ -231,7 +247,7 @@ StartableProgressedCoTask {
 StartableCoTask {
     delay(1111)
     "My value"
-}.start { result: String ->        // called before on result callback
+}.start { result: String -&gt;        // called before on result callback
     appendStatus("Result $result")
 }
 </pre>
@@ -239,10 +255,30 @@ StartableCoTask {
 
 Using with scopes, Extension functions
 <pre>
+// You can use these extensions functions with coroutine scope
 GlobalScope.coTask { }
 GlobalScope.progressedCoTask { publishProgress(0) }
 GlobalScope.startableCoTask { }
 GlobalScope.startableProgressedCoTask { publishProgress(0) }
+
+// Specifying Dispatcher
+GlobalScope.coTask(Dispatchers.IO) { }
+GlobalScope.progressedCoTask(Dispatchers.IO) { publishProgress(0) }
+GlobalScope.startableCoTask(Dispatchers.IO) { }
+GlobalScope.startableProgressedCoTask(Dispatchers.IO) { publishProgress(0) }
+
+// "with" infix notation
+CoTask withIO {
+}
+ProgressedCoTask withIO {
+    publishProgress(1)
+}
+
+// "with" can't be used as infix notation if you are accessing other functions like start, onCancel, logError, etc
+StartableCoTask.withIO {
+}.start()
+CoTask.withIO {
+}.logError()
 </pre>
 <hr>
 <br>
@@ -267,7 +303,7 @@ ThreadTask {    // this: Task&lt;String, Nothing&gt; String => return type
     appendStatus("ThreadTask1 completed")
 }.onCancelled {
     appendStatus("ThreadTask1 cancelled")
-}.onResult { result: String ->
+}.onResult { result: String -&gt;
     appendStatus("ThreadTask1 result $result")
 }
 </pre>
@@ -294,12 +330,12 @@ Chaining Tasks
 ThreadTask {               // this: Task&lt;String, Nothing&gt; String => return type
     delay(1000)
     "500"
-}.then { it: String ->     // this: Task<Int, Nothing>, it:String => the previous return value
+}.then { it: String -&gt;     // this: Task&lt;Int, Nothing&gt;, it:String => the previous return value
     delay(2000)
     it.toInt()
-}.then { it: Int ->
+}.then { it: Int -&gt;
     it / 5f
-}.onResult { result: Float ->
+}.onResult { result: Float -&gt;
     appendStatus("ThreadTask2 result $result")
 }
 </pre>
@@ -313,9 +349,9 @@ ProgressedThreadTask {    // this: Task&lt;String, Int&gt; String => return type
     delay(1000)
     publishProgress(99)
     "My valuable result"
-}.onProgress { progress: Int ->
+}.onProgress { progress: Int -&gt;
     appendStatus("ThreadTask3 progress $progress")
-}.onResult { result: String ->
+}.onResult { result: String -&gt;
     appendStatus("ThreadTask3 result $result")
 }
 </pre>
@@ -361,7 +397,7 @@ StartableProgressedThreadTask {
 StartableThreadTask {
     delay(1111)
     "My value"
-}.start { result: String ->        // called before on result callback
+}.start { result: String -&gt;        // called before on result callback
     appendStatus("Result $result")
 }
 </pre>
@@ -372,7 +408,7 @@ StartableThreadTask {
 
 Simple JTask
 <pre>
-JTask.with(task -> {
+JTask.with(task -&gt; {
     task.sleep(1000);
     return "hello";
 }).start();
@@ -381,7 +417,7 @@ JTask.with(task -> {
 
 Callbacks and Error handling
 <pre>
-JTask.with(task -> {
+JTask.with(task -&gt; {
     int i = 0;
     while (i < 10) {
         task.ensureActive();                         // Mandatory if you cancel the task!
@@ -389,17 +425,17 @@ JTask.with(task -> {
         i++;
     }
     return "hello";
-}).onStart(() -> {
+}).onStart(() -&gt; {
     log("OnStart");
-}).onEnd(() -> {
+}).onEnd(() -&gt; {
     log("OnEnd");
-}).onCancel(() -> {
+}).onCancel(() -&gt; {
     log("OnCancel");
-}).onError((error) -> {
+}).onError((error) -&gt; {
     log("OnError : " + error.getLocalizedMessage());
-}).onProgress((progress) -> {
+}).onProgress((progress) -&gt; {
     log("Progress: " + ((int) progress[0]));
-}).onResult((result) -> {
+}).onResult((result) -&gt; {
     log("Result: " + result);
 }).start();
 </pre>
@@ -407,16 +443,16 @@ JTask.with(task -> {
 
 Chaining Tasks
 <pre>
-new JTask<String>(task -> {
+new JTask&lt;String&gt;(task -&gt; {
     task.sleep(1000);
     return "123";
-}).then(result ->
-    new JTask<Integer>(task -> {
+}).then(result -&gt;
+    new JTask&lt;Integer&gt;(task -&gt; {
         task.sleep(1000);
         return Integer.parseInt(result);
-    }).onStart(() -> {
+    }).onStart(() -&gt; {
         log("OnStart");
-    }).onResult(intResult -> {
+    }).onResult(intResult -&gt; {
         log("Result: " + intResult);
     })
 ).start();
@@ -424,7 +460,7 @@ new JTask<String>(task -> {
 
 Cancelling Task
 <pre>
-JTask<?> task = JTask.with(t -> {
+JTask&lt;?&gt; task = JTask.with(t -&gt; {
     int i = 0;
     while (i < 10) {
         t.ensureActive();       // Mandatory if you cancel the task!
@@ -432,7 +468,7 @@ JTask<?> task = JTask.with(t -> {
         i++;
     }
     return "hello";
-}).onCancel(() -> {
+}).onCancel(() -&gt; {
     log("OnCancel");
 });
 task.start();

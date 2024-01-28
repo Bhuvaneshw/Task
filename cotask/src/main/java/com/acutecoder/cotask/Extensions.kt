@@ -25,29 +25,29 @@ import kotlin.coroutines.EmptyCoroutineContext
  * @author AcuteCoder
  */
 
-fun <Result> CoroutineScope.coTask(runnable: suspend Task<Result, Nothing>.() -> Result): TaskHandler<Result, Nothing> =
-    CoTask(this.coroutineContext, runnable)
+fun <Result> CoroutineScope.coTask(
+    context: CoroutineContext = Dispatchers.Default,
+    runnable: suspend Task<Result, Nothing>.() -> Result
+): TaskHandler<Result, Nothing> =
+    CoTask(this.coroutineContext + context, runnable)
 
-fun <Result, Progress> CoroutineScope.progressedCoTask(runnable: suspend Task<Result, Progress>.() -> Result): TaskHandler<Result, Progress> =
-    ProgressedCoTask(this.coroutineContext, runnable)
-
-fun <Result> CoroutineScope.startableCoTask(runnable: suspend Task<Result, Nothing>.() -> Result): StartableTaskHandler<Result, Nothing> =
-    StartableCoTask(this.coroutineContext, runnable)
-
-fun <Result, Progress> CoroutineScope.startableProgressedCoTask(runnable: suspend Task<Result, Progress>.() -> Result): StartableTaskHandler<Result, Progress> =
-    StartableProgressedCoTask(this.coroutineContext, runnable)
-
-@Suppress("FunctionName")
-fun <Result, Progress> ProgressedCoTask(
+fun <Result, Progress> CoroutineScope.progressedCoTask(
     context: CoroutineContext = Dispatchers.Default,
     runnable: suspend Task<Result, Progress>.() -> Result
-): TaskHandler<Result, Progress> = CoTask(context, runnable)
+): TaskHandler<Result, Progress> =
+    ProgressedCoTask(this.coroutineContext + context, runnable)
 
-@Suppress("FunctionName")
-fun <Result, Progress> StartableProgressedCoTask(
+fun <Result> CoroutineScope.startableCoTask(
+    context: CoroutineContext = Dispatchers.Default,
+    runnable: suspend Task<Result, Nothing>.() -> Result
+): StartableTaskHandler<Result, Nothing> =
+    StartableCoTask(this.coroutineContext + context, runnable)
+
+fun <Result, Progress> CoroutineScope.startableProgressedCoTask(
     context: CoroutineContext = Dispatchers.Default,
     runnable: suspend Task<Result, Progress>.() -> Result
-): StartableTaskHandler<Result, Progress> = StartableCoTask(context, runnable)
+): StartableTaskHandler<Result, Progress> =
+    StartableProgressedCoTask(this.coroutineContext + context, runnable)
 
 fun <Result, Progress> TaskHandler<Result, Progress>.logError(tag: String? = null) =
     catch { Log.e(tag ?: "CoTask", "$it") }
@@ -87,11 +87,71 @@ suspend fun withDefault(runnable: suspend CoroutineScope.() -> Unit) {
     }
 }
 
+suspend fun withMain(runnable: suspend CoroutineScope.() -> Unit) {
+    withContext(Dispatchers.Main) {
+        runnable()
+    }
+}
+
 suspend fun withUnconfined(runnable: suspend CoroutineScope.() -> Unit) {
     withContext(Dispatchers.Unconfined) {
         runnable()
     }
 }
+
+infix fun <Result> CoTask.Companion.withIO(runnable: suspend Task<Result, Nothing>.() -> Result):
+        TaskHandler<Result, Nothing> = CoTask(Dispatchers.IO, runnable)
+
+infix fun <Result> CoTask.Companion.withDefault(runnable: suspend Task<Result, Nothing>.() -> Result):
+        TaskHandler<Result, Nothing> = CoTask(Dispatchers.Default, runnable)
+
+infix fun <Result> CoTask.Companion.withMain(runnable: suspend Task<Result, Nothing>.() -> Result):
+        TaskHandler<Result, Nothing> = CoTask(Dispatchers.Main, runnable)
+
+infix fun <Result> CoTask.Companion.withUnconfined(runnable: suspend Task<Result, Nothing>.() -> Result):
+        TaskHandler<Result, Nothing> = CoTask(Dispatchers.Unconfined, runnable)
+
+infix fun <Result, Progress> ProgressedCoTask.Companion.withIO(runnable: suspend Task<Result, Progress>.() -> Result):
+        TaskHandler<Result, Progress> = ProgressedCoTask(Dispatchers.IO, runnable)
+
+infix fun <Result, Progress> ProgressedCoTask.Companion.withDefault(runnable: suspend Task<Result, Progress>.() -> Result):
+        TaskHandler<Result, Progress> = ProgressedCoTask(Dispatchers.Default, runnable)
+
+infix fun <Result, Progress> ProgressedCoTask.Companion.withMain(runnable: suspend Task<Result, Progress>.() -> Result):
+        TaskHandler<Result, Progress> = ProgressedCoTask(Dispatchers.Main, runnable)
+
+infix fun <Result, Progress> ProgressedCoTask.Companion.withUnconfined(runnable: suspend Task<Result, Progress>.() -> Result):
+        TaskHandler<Result, Progress> = ProgressedCoTask(Dispatchers.Unconfined, runnable)
+
+infix fun <Result> StartableCoTask.Companion.withIO(runnable: suspend Task<Result, Nothing>.() -> Result): StartableTaskHandler<Result, Nothing> =
+    StartableCoTask(Dispatchers.IO, runnable)
+
+infix fun <Result> StartableCoTask.Companion.withDefault(runnable: suspend Task<Result, Nothing>.() -> Result):
+        StartableTaskHandler<Result, Nothing> =
+    StartableCoTask(Dispatchers.Default, runnable)
+
+infix fun <Result> StartableCoTask.Companion.withMain(runnable: suspend Task<Result, Nothing>.() -> Result):
+        StartableTaskHandler<Result, Nothing> =
+    StartableCoTask(Dispatchers.Main, runnable)
+
+infix fun <Result> StartableCoTask.Companion.withUnconfined(runnable: suspend Task<Result, Nothing>.() -> Result):
+        StartableTaskHandler<Result, Nothing> =
+    StartableCoTask(Dispatchers.Unconfined, runnable)
+
+infix fun <Result, Progress> StartableProgressedCoTask.Companion.withIO(runnable: suspend Task<Result, Progress>.() -> Result):
+        StartableTaskHandler<Result, Progress> = StartableProgressedCoTask(Dispatchers.IO, runnable)
+
+infix fun <Result, Progress> StartableProgressedCoTask.Companion.withDefault(runnable: suspend Task<Result, Progress>.() -> Result):
+        StartableTaskHandler<Result, Progress> =
+    StartableProgressedCoTask(Dispatchers.Default, runnable)
+
+infix fun <Result, Progress> StartableProgressedCoTask.Companion.withMain(runnable: suspend Task<Result, Progress>.() -> Result):
+        StartableTaskHandler<Result, Progress> =
+    StartableProgressedCoTask(Dispatchers.Main, runnable)
+
+infix fun <Result, Progress> StartableProgressedCoTask.Companion.withUnconfined(runnable: suspend Task<Result, Progress>.() -> Result):
+        StartableTaskHandler<Result, Progress> =
+    StartableProgressedCoTask(Dispatchers.Unconfined, runnable)
 
 @OptIn(ExperimentalStdlibApi::class)
 private fun PausingDispatcher(

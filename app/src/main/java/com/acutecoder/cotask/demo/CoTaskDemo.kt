@@ -10,7 +10,9 @@ import com.acutecoder.cotask.logError
 import com.acutecoder.cotask.progressedCoTask
 import com.acutecoder.cotask.startableCoTask
 import com.acutecoder.cotask.startableProgressedCoTask
+import com.acutecoder.cotask.withIO
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -41,6 +43,19 @@ fun coTaskExample(mainActivity: MainActivity) = with(mainActivity) {
                 delay(1000)
             }
             job.await()
+        }
+    }
+
+    fun usingDispatchers() {
+        CoTask(Dispatchers.IO) {
+            delay(1000L)
+        }
+
+        // Extensions
+        CoTask withIO {
+        }
+        // or
+        CoTask.withIO {
         }
     }
 
@@ -131,6 +146,8 @@ fun coTaskExample(mainActivity: MainActivity) = with(mainActivity) {
                 ensureActive()            // enabling that the task can be paused/cancelled here
                 publishProgress(10 - i)
             }
+//            launchPausing {  }.pause()
+//            asyncPausing {  }.pause()
         }.onProgress {
             appendStatus("CoTask5 progress $it")
         }.onPause {
@@ -168,15 +185,36 @@ fun coTaskExample(mainActivity: MainActivity) = with(mainActivity) {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun extensionFunctions() {  // You can use these extensions functions with coroutine scope
+    fun extensionFunctions() {
+        // You can use these extensions functions with coroutine scope
         GlobalScope.coTask { }
         GlobalScope.progressedCoTask { publishProgress(0) }
         GlobalScope.startableCoTask { }
         GlobalScope.startableProgressedCoTask { publishProgress(0) }
+
+        // Specifying Dispatcher
+        GlobalScope.coTask(Dispatchers.IO) { }
+        GlobalScope.progressedCoTask(Dispatchers.IO) { publishProgress(0) }
+        GlobalScope.startableCoTask(Dispatchers.IO) { }
+        GlobalScope.startableProgressedCoTask(Dispatchers.IO) { publishProgress(0) }
+
+        // "with" infix notation
+        CoTask withIO {
+        }
+        ProgressedCoTask withIO {
+            publishProgress(1)
+        }
+
+        // "with" can't be used as infix notation if you are accessing other functions like start, onCancel, logError, etc
+        StartableCoTask.withIO {
+        }.start()
+        CoTask.withIO {
+        }.logError()
     }
 
     simpleCoTask()
     usingCoroutineFunctions()
+    usingDispatchers()
     callbackCoTask()
     errorCoTask()
     chainedCoTask()
