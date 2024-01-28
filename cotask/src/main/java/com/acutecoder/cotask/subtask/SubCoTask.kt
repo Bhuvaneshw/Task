@@ -1,6 +1,6 @@
 package com.acutecoder.cotask.subtask
 
-import com.acutecoder.cotask.CoTask
+import com.acutecoder.cotask.ProgressedCoTask
 import com.acutecoder.cotask.base.InterfaceProvider
 import com.acutecoder.cotask.base.Task
 import com.acutecoder.cotask.base.TaskHandler
@@ -44,7 +44,7 @@ internal class SubCoTask<PreviousResult, Result, Progress>(
                 if (it is CancellationException) {
                     coroutineContext.cancelChildren()
                     onCancelled?.let { onCancelled ->
-                        CoTask.onMainThread { onCancelled.invoke() }
+                        ProgressedCoTask.onMainThread { onCancelled.invoke() }
                     }
                     invokeOnEnd()
                 }
